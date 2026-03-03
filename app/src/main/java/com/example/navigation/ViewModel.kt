@@ -1,5 +1,5 @@
 package com.example.navigation
-
+/*
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,13 +8,20 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import android.net.Uri
+import kotlinx.coroutines.delay
 
-class MyViewModel(private val dao: UserDao): ViewModel() {
+class MyViewModel(
+    private val dao: UserDao,
+): ViewModel() {
+
     val user = dao.getUserName()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
             null)
+
+
+
 
     fun saveUsername(name: String){
         viewModelScope.launch {
@@ -23,7 +30,7 @@ class MyViewModel(private val dao: UserDao): ViewModel() {
                 id = 0,
                 username = name,
                 imageUri = current?.imageUri
-            )
+                )
             )
         }
     }
@@ -43,4 +50,4 @@ class MyViewModel(private val dao: UserDao): ViewModel() {
         }
     }
 }
-
+*/

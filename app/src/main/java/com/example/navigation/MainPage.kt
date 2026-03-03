@@ -31,6 +31,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import android.net.Uri
+import android.text.Layout
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.isPopupLayout
+import androidx.room.util.TableInfo
 import coil.compose.rememberAsyncImagePainter
 
 data class Message(val author: String, val body: String)
@@ -38,77 +51,137 @@ data class Message(val author: String, val body: String)
 
 // Shows the message with users image, name and text.
 @Composable
-fun MessageCard(viewModel: MyViewModel,msg: Message){
-    val user by viewModel.user.collectAsState()
+fun MessageCard(message: MessageEntity){
+    val isUser = message.isFromUser
 
     // Padding around the message
-    Row(modifier = Modifier.padding(all = 8.dp)) {
-        val painter = if (user?.imageUri != null){
-            rememberAsyncImagePainter(Uri.parse(user!!.imageUri))
-        } else {
-            painterResource(R.drawable.ic_launcher_foreground)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+    ) {
+
+        if (!isUser) {
+            Image(
+                painter = painterResource(R.drawable.minecraft_2024_cover_art),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
         }
-
-        Image(
-            painter = painter,
-            contentDescription = null,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        )
-        // Adds horizontal space between image and columns
-        Spacer(modifier = Modifier.width(8.dp))
-        // Toggles the isExpanded variable when we click on this Column
-        Column {
-            Text(
-                text = user?.username ?: "None",
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleLarge)
-
-            // Vertical space between author and message
-            Spacer(modifier = Modifier.width(4.dp))
-
-            ExpandMessage(msg.body)
+        ExpandMessage(text = message.content, isUser = isUser)
         }
-    }
 }
+
 
 // Handles message expansion
 @Composable
-fun ExpandMessage(text: String) {
+fun ExpandMessage(text: String, isUser: Boolean) {
     var isExpanded by remember { mutableStateOf(false) }
-    // Toggles the isExpanded variable when we click on this Column
-    Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
-        Surface(shape = MaterialTheme.shapes.medium, shadowElevation = 1.dp) {
-            Text(
-                text = text,
-                modifier = Modifier.padding(all = 4.dp),
-                maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
 
+
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = if(isUser)
+            MaterialTheme.colorScheme.primary
+        else
+            MaterialTheme.colorScheme.surfaceVariant,
+        shadowElevation = 1.dp,
+        modifier = Modifier.clickable {isExpanded = !isExpanded}
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(all = 4.dp),
+            maxLines = if (isExpanded) Int.MAX_VALUE else 2,
+            color = if (isUser)
+                MaterialTheme.colorScheme.onPrimary
+            else
+                MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
 // Shows the conversation stored in SampleData using MessageCard
 @Composable
-fun Conversation(viewModel: MyViewModel, messages: List<Message>,  onNavigateToProfilePage: () -> Unit){
-    // Controls the buttons location
-    Box(modifier = Modifier.fillMaxSize()){
-        Button(onClick = onNavigateToProfilePage,
-            modifier = Modifier
-                .align(Alignment.TopEnd)) {
-            Text("Profile")
-        }
-    }
+fun Conversation(
+    viewModel: ChatViewModel,
+    onNavigateToProfilePage: () -> Unit
+){
+    val messages by viewModel.message.collectAsState()
 
-    Column {
-        Spacer(modifier = Modifier.height(50.dp))
-        LazyColumn {
+    Column(modifier = Modifier.fillMaxSize())
+    {
+        // Profile button
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(onClick = onNavigateToProfilePage) {
+                Text("Profile")
+            }
+        }
+        // Message list
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            reverseLayout = false
+        ) {
             items(messages) { message ->
-                MessageCard(viewModel,message)
+                MessageCard(message)
+            }
+        }
+        ChatBox(
+            onSend = { text ->
+                viewModel.onEvent(MessageEvent.SendMessage(text))
+            }
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+fun ChatBox(
+    onSend: (String) -> Unit
+) {
+    var text by remember { mutableStateOf("") }
+
+    Surface(
+        tonalElevation = 4.dp,
+        shadowElevation = 8.dp
+    ) {
+        Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OutlinedTextField(
+            value = text,
+            onValueChange = {text = it},
+            modifier = Modifier.weight(1f),
+            placeholder = { Text("Type something")},
+            shape = RoundedCornerShape(24.dp),
+            maxLines = 4
+        )
+
+        IconButton(
+            onClick = { if (text.isNotBlank()) {
+                onSend(text)
+                text = ""
+            }
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.PlayArrow,
+                contentDescription = "Send"
+                )
             }
         }
     }

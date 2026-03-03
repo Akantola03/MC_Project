@@ -1,5 +1,5 @@
 package com.example.navigation
-
+/*
 // Saves user actions
 sealed interface UserEvent {
     object SaveUser: UserEvent
@@ -7,5 +7,5 @@ sealed interface UserEvent {
 
     object ShowDialog: UserEvent
     object HideDialog: UserEvent
-
 }
+*/

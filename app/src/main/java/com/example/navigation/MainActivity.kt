@@ -32,9 +32,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         NotificationHandler.CreateNotificationChannel(this)
+
         val db = DatabaseProvider.getDatabase(this)
-        val factory = ViewModelFactory(db.userDao())
-        val viewModel = ViewModelProvider(this, factory)[MyViewModel::class.java]
+        val factory = ViewModelFactory(db.messageDao())
+        val viewModel = ViewModelProvider(this, factory)[ChatViewModel::class.java]
 
 
         setContent {
@@ -47,11 +48,11 @@ class MainActivity : ComponentActivity() {
 
 // create an instance of database
 object DatabaseProvider {
-    fun getDatabase(context: Context): UserDatabase =
+    fun getDatabase(context: Context): AppDatabase =
         Room.databaseBuilder(
             context,
-            UserDatabase::class.java,
-            "user_db"
+            AppDatabase::class.java,
+            "chat_db"
         ).build()
 }
 
@@ -64,7 +65,7 @@ object ProfilePage
 
 // Handles the navigation between MainPage and Profile
 @Composable
-fun MyNavHost(viewModel: MyViewModel, modifier: Modifier= Modifier,
+fun MyNavHost(viewModel: ChatViewModel, modifier: Modifier= Modifier,
               navController: NavHostController = rememberNavController()) {
 
 
@@ -73,7 +74,8 @@ fun MyNavHost(viewModel: MyViewModel, modifier: Modifier= Modifier,
         startDestination = MainScreen) {
 
         composable<MainScreen> {
-            Conversation(viewModel,SampleData.conversationSample(viewModel),
+            Conversation(
+                viewModel,
                 onNavigateToProfilePage = { navController.navigate(route=ProfilePage) })
         }
 

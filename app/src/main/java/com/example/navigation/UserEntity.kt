@@ -1,5 +1,5 @@
 package com.example.navigation
-
+/*
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -10,3 +10,4 @@ data class UserEntity (
     val username: String?,
     val imageUri: String? = null
 )
+*/

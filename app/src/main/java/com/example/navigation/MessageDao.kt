@@ -11,6 +11,9 @@ interface MessageDao {
     @Insert
     suspend fun insertMessage(message: MessageEntity)
 
-    @Query("SELECT * FROM message ORDER BY id ASC")
-    fun getMessages(): Flow<List<MessageEntity>>
+    @Query("SELECT * FROM messages ORDER BY id ASC")
+    fun getAllMessages(): Flow<List<MessageEntity>>
+
+    @Query("DELETE FROM messages")
+    suspend fun clearAll()
 }

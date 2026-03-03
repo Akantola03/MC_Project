@@ -1,5 +1,5 @@
 package com.example.navigation
-
+/*
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -15,3 +15,4 @@ interface UserDao {
     @Query("Select * From user WHere id = 0")
     fun getUserName(): Flow<UserEntity?>
 }
+*/

@@ -43,11 +43,11 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: MyViewModel) {
+fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val user by viewModel.user.collectAsState()
+    val message by viewModel.message.collectAsState()
     // Controls the button location
     Box(modifier = Modifier.fillMaxSize()){
         Button(onClick = onNavigateToMainScreen,
@@ -58,17 +58,9 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: MyViewModel) {
     }
 
     Row(modifier = Modifier.padding(top = 60.dp, start = 8.dp, end = 8.dp)) {
-
-        val painter = if (user?.imageUri != null){
-            rememberAsyncImagePainter(Uri.parse(user!!.imageUri))
-        } else {
-            painterResource(R.drawable.ic_launcher_foreground)
-        }
-
-
         Image(
             // Here we choose the image and edit its properties
-            painter = painterResource(R.drawable.ic_launcher_foreground),
+            painter = painterResource(R.drawable.cv_kuva1),
             contentDescription = null,
             modifier = Modifier
                 .size(50.dp)
@@ -77,7 +69,7 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: MyViewModel) {
         )
         Column {
             Text(
-                text = user?.username ?: "None",
+                text = "Akris",
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleLarge
             )
@@ -86,9 +78,9 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: MyViewModel) {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            InputNewName(viewModel)
+            //InputNewName(viewModel)
 
-            ShowImage(viewModel)
+            //ShowImage(viewModel)
 
             // Permission launcher
             val permissionLauncher = rememberLauncherForActivityResult(
@@ -110,10 +102,10 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: MyViewModel) {
         }
     }
 }
-
+/*
 // Shows the text field for new profile name
 @Composable
-fun InputNewName(viewModel: MyViewModel) {
+fun InputNewName(viewModel: ChatViewModel) {
     val user by viewModel.user.collectAsState()
     var myInput by remember { mutableStateOf(user?.username ?: "") }
 
@@ -128,7 +120,7 @@ fun InputNewName(viewModel: MyViewModel) {
 }
 
 @Composable
-fun ShowImage(viewModel: MyViewModel) {
+fun ShowImage(viewModel: ChatViewModel) {
     val context = LocalContext.current
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -146,3 +138,4 @@ fun ShowImage(viewModel: MyViewModel) {
     }
 }
 
+*/
