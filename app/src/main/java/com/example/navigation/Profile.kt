@@ -78,9 +78,6 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) 
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            //InputNewName(viewModel)
-
-            //ShowImage(viewModel)
 
             // Permission launcher
             val permissionLauncher = rememberLauncherForActivityResult(
@@ -102,40 +99,3 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) 
         }
     }
 }
-/*
-// Shows the text field for new profile name
-@Composable
-fun InputNewName(viewModel: ChatViewModel) {
-    val user by viewModel.user.collectAsState()
-    var myInput by remember { mutableStateOf(user?.username ?: "") }
-
-    TextField(
-        value = myInput,
-        onValueChange = {myInput = it },
-        label = { Text("Profile name")}
-    )
-    Button(onClick = { viewModel.saveUsername(myInput) }) {
-        Text(text = "Save")
-    }
-}
-
-@Composable
-fun ShowImage(viewModel: ChatViewModel) {
-    val context = LocalContext.current
-    val pickImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri: Uri? ->
-        uri?.let { viewModel.saveImageFromGallery(it, context)}
-    }
-
-    Spacer(modifier = Modifier.height(40.dp))
-    Button(onClick = {
-        pickImageLauncher.launch(
-            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-        )
-    }, modifier = Modifier) {
-        Text(text = "New photo")
-    }
-}
-
-*/

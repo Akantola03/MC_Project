@@ -1,6 +1,7 @@
 package com.example.navigation
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -16,4 +17,7 @@ interface MessageDao {
 
     @Query("DELETE FROM messages")
     suspend fun clearAll()
+
+    @Delete
+    suspend fun deleteMessage(message: MessageEntity)
 }

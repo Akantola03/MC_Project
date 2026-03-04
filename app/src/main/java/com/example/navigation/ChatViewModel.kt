@@ -27,6 +27,13 @@ class ChatViewModel(
                 sendMessage(event.content)
             }
 
+            is MessageEvent.DeleteMessage -> {
+                viewModelScope.launch {
+                    dao.deleteMessage(event.message)
+                }
+            }
+
+
             MessageEvent.ClearChat -> {
                 clearChat()
             }

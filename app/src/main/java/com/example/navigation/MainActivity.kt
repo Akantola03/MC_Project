@@ -68,7 +68,6 @@ object ProfilePage
 fun MyNavHost(viewModel: ChatViewModel, modifier: Modifier= Modifier,
               navController: NavHostController = rememberNavController()) {
 
-
     NavHost(modifier=modifier,
         navController = navController,
         startDestination = MainScreen) {

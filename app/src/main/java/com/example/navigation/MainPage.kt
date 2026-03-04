@@ -38,30 +38,70 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.isPopupLayout
 import androidx.room.util.TableInfo
 import coil.compose.rememberAsyncImagePainter
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 
-data class Message(val author: String, val body: String)
 
 
 // Shows the message with users image, name and text.
 @Composable
-fun MessageCard(message: MessageEntity){
+fun MessageCard(
+    message: MessageEntity,
+    onDelete: (MessageEntity)-> Unit
+){
+    var showDialog by remember { mutableStateOf(false) }
     val isUser = message.isFromUser
+
+    // Delete confirmation dialog
+    if(showDialog) {
+        AlertDialog(
+            onDismissRequest = {showDialog = false},
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete(message)
+                        showDialog = false
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {showDialog = false}
+                ) {
+                    Text("Cancel")
+                }
+            },
+            title = {Text("Delete message?")},
+            text = {Text("This message is lost forever")}
+        )
+    }
+
 
     // Padding around the message
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .pointerInput(Unit) {
+                detectTapGestures(onLongPress = {showDialog = true}
+                )
+            },
+        horizontalArrangement = if (isUser)
+            Arrangement.End
+        else
+            Arrangement.Start
     ) {
-
         if (!isUser) {
             Image(
                 painter = painterResource(R.drawable.minecraft_2024_cover_art),
@@ -69,39 +109,36 @@ fun MessageCard(message: MessageEntity){
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                    .border(1.5.dp,
+                        MaterialTheme.colorScheme.primary,
+                        CircleShape
+                    )
             )
             Spacer(modifier = Modifier.width(8.dp))
         }
-        ExpandMessage(text = message.content, isUser = isUser)
-        }
-}
+        //ExpandMessage(text = message.content, isUser = isUser)
 
-
-// Handles message expansion
-@Composable
-fun ExpandMessage(text: String, isUser: Boolean) {
-    var isExpanded by remember { mutableStateOf(false) }
-
-
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = if(isUser)
-            MaterialTheme.colorScheme.primary
-        else
-            MaterialTheme.colorScheme.surfaceVariant,
-        shadowElevation = 1.dp,
-        modifier = Modifier.clickable {isExpanded = !isExpanded}
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(all = 4.dp),
-            maxLines = if (isExpanded) Int.MAX_VALUE else 2,
-            color = if (isUser)
-                MaterialTheme.colorScheme.onPrimary
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = if(isUser)
+                MaterialTheme.colorScheme.primary
             else
-                MaterialTheme.colorScheme.onSurfaceVariant
-        )
+                MaterialTheme.colorScheme.surfaceVariant,
+            shadowElevation = 2.dp
+        ) {
+            Text(
+                text = message.content,
+                modifier = Modifier.padding(
+                    horizontal = 12.dp,
+                    vertical = 8.dp
+                ),
+                color = if (isUser)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
 
@@ -133,8 +170,12 @@ fun Conversation(
                 .fillMaxWidth(),
             reverseLayout = false
         ) {
-            items(messages) { message ->
-                MessageCard(message)
+            items(messages, key = {it.id}) { message ->
+                MessageCard(
+                    message,
+                    onDelete = {viewModel.onEvent(MessageEvent.DeleteMessage(it))
+                    }
+                )
             }
         }
         ChatBox(
