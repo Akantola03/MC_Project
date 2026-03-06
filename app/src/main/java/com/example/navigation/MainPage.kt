@@ -52,7 +52,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 
 
 
-// Shows the message with users image, name and text.
+// Shows the message sent by user or bot
 @Composable
 fun MessageCard(
     message: MessageEntity,
@@ -102,21 +102,6 @@ fun MessageCard(
         else
             Arrangement.Start
     ) {
-        if (!isUser) {
-            Image(
-                painter = painterResource(R.drawable.minecraft_2024_cover_art),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .border(1.5.dp,
-                        MaterialTheme.colorScheme.primary,
-                        CircleShape
-                    )
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-        //ExpandMessage(text = message.content, isUser = isUser)
 
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -142,7 +127,7 @@ fun MessageCard(
     }
 }
 
-// Shows the conversation stored in SampleData using MessageCard
+// Displays the messages stored in the Room Database
 @Composable
 fun Conversation(
     viewModel: ChatViewModel,
@@ -163,6 +148,9 @@ fun Conversation(
                 Text("Profile")
             }
         }
+
+        ChatHeader()
+
         // Message list
         LazyColumn(
             modifier = Modifier
@@ -227,3 +215,44 @@ fun ChatBox(
         }
     }
 }
+
+@Composable
+fun ChatHeader() {
+    Surface(
+        tonalElevation = 3.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Image(
+                painter = painterResource(R.drawable.minecraft_2024_cover_art),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .border(1.5.dp,
+                        MaterialTheme.colorScheme.primary,
+                        CircleShape
+                    )
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column {
+                Text (
+                    text = "ChatBOT",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text (
+                    text = "Online",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+

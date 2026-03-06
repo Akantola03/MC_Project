@@ -56,23 +56,30 @@ object DatabaseProvider {
         ).build()
 }
 
-
 @Serializable
-object MainScreen
+object ConversationsScreen
+@Serializable
+object ChatScreen
 @Serializable
 object ProfilePage
 
 
-// Handles the navigation between MainPage and Profile
+// Handles the navigation between ConversationsScreen, ChatScreen and ProfilePage
 @Composable
 fun MyNavHost(viewModel: ChatViewModel, modifier: Modifier= Modifier,
               navController: NavHostController = rememberNavController()) {
 
     NavHost(modifier=modifier,
         navController = navController,
-        startDestination = MainScreen) {
+        startDestination = ConversationsScreen) {
 
-        composable<MainScreen> {
+        composable<ConversationsScreen> {
+            ConversationsScreen(
+                onOpenChat = {navController.navigate(route=ChatScreen)}
+            )
+        }
+
+        composable<ChatScreen> {
             Conversation(
                 viewModel,
                 onNavigateToProfilePage = { navController.navigate(route=ProfilePage) })
