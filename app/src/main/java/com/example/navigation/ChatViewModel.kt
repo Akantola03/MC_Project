@@ -11,7 +11,8 @@ import android.net.Uri
 import kotlinx.coroutines.delay
 
 class ChatViewModel(
-    private val dao: MessageDao
+    private val dao: MessageDao,
+    private val context: Context
 ): ViewModel() {
 
     val message = dao.getAllMessages()
@@ -54,12 +55,22 @@ class ChatViewModel(
             // Fake delay
             delay(5000)
 
+            val reply = generateReply(text)
+
             dao.insertMessage(
                 MessageEntity(
-                    content = generateReply(text),
+                    content = reply,
                     isFromUser = false
                 )
             )
+
+            // Send notification if app is in background
+            if (!AppState.isForeground) {
+                NotificationHandler.SendBotMessageNotification(
+                    context,
+                    "ChatBot",
+                    message = reply)
+            }
         }
     }
 

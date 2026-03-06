@@ -1,5 +1,6 @@
 package com.example.navigation
 
+import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,17 +38,17 @@ import android.os.Build
 import android.widget.Toast
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 
-
+// displays the items of the profile page.
 @Composable
 fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val message by viewModel.message.collectAsState()
-    // Controls the button location
     Box(modifier = Modifier.fillMaxSize()){
         Button(onClick = onNavigateToMainScreen,
             modifier = Modifier
@@ -58,7 +59,6 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) 
 
     Row(modifier = Modifier.padding(top = 60.dp, start = 8.dp, end = 8.dp)) {
         Image(
-            // Here we choose the image and edit its properties
             painter = painterResource(R.drawable.cv_kuva1),
             contentDescription = null,
             modifier = Modifier
@@ -83,18 +83,33 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) 
                 contract = ActivityResultContracts.RequestPermission()
             ) { isGranted ->
                 if(isGranted) {
-                    NotificationHandler.SendNotification(context)
+                    NotificationHandler.SendEnableNotification(context)
                 } else {
                     Toast.makeText(context, "Denied", Toast.LENGTH_SHORT).show()
                 }
             }
             Button(onClick = {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+                    if (ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                        )== PackageManager.PERMISSION_GRANTED
+                    ) {
+                        // Permission already granted
+                        NotificationHandler.SendEnableNotification(context)
+
+                    } else {
+                        // Show popup
+                        permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    }
+
+
                 } else {
-                    NotificationHandler.SendNotification(context)
+                    NotificationHandler.SendEnableNotification(context)
                 }
-            }) {Text("Allow Notifications")}
+            }) {Text("Allow Notifications")
+            }
         }
     }
 }

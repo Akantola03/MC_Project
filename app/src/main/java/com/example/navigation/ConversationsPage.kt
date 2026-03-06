@@ -17,23 +17,39 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 
 
 @Composable
 fun ConversationsScreen(
-    onOpenChat: () -> Unit
+    onOpenChat: () -> Unit,
+    onNavigateToProfilePage: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         Text(
-            text = "ChatAppPro",
+            text = "ChatAppProject",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(16.dp)
         )
+
+        // Profile button
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(onClick = onNavigateToProfilePage) {
+                Text("Profile")
+            }
+        }
+
 
         Card(
             modifier = Modifier

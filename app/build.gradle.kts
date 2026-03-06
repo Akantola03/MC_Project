@@ -110,4 +110,6 @@ dependencies {
     implementation("androidx.room:room-paging:$room_version")
 
     implementation("io.coil-kt:coil-compose:2.6.0")
+
+
 }
