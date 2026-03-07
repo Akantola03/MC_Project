@@ -112,7 +112,8 @@ fun MyNavHost(
         composable<ChatScreen> {
             Conversation(
                 viewModel,
-                onNavigateToProfilePage = { navController.navigate(route=ProfilePage) })
+                onNavigateToProfilePage = { navController.navigate(route=ProfilePage) },
+                onNavigateToMainScreen = { navController.popBackStack() })
         }
 
         composable<ProfilePage> {

@@ -27,14 +27,11 @@ class ChatViewModel(
             is MessageEvent.SendMessage -> {
                 sendMessage(event.content)
             }
-
             is MessageEvent.DeleteMessage -> {
                 viewModelScope.launch {
                     dao.deleteMessage(event.message)
                 }
             }
-
-
             MessageEvent.ClearChat -> {
                 clearChat()
             }
@@ -45,15 +42,15 @@ class ChatViewModel(
         if (text.isBlank()) return
 
         viewModelScope.launch {
-            // insert user message
+            // Insert user message
             dao.insertMessage(
                 MessageEntity(content = text,
                     isFromUser = true
                 )
             )
 
-            // Fake delay
-            delay(5000)
+            // Fake delay to ChatBOT's reply.
+            delay(3500)
 
             val reply = generateReply(text)
 
@@ -64,7 +61,7 @@ class ChatViewModel(
                 )
             )
 
-            // Send notification if app is in background
+            // Send notification if app is running in background.
             if (!AppState.isForeground) {
                 NotificationHandler.SendBotMessageNotification(
                     context,
@@ -73,13 +70,14 @@ class ChatViewModel(
             }
         }
     }
-
+    // Could be used to clear the whole chat, but is currently not used.
     private  fun clearChat() {
         viewModelScope.launch {
             dao.clearAll()
         }
     }
 
+    // Pre coded replies by the "ChatBot".
     private fun generateReply(input: String): String {
         return when {
             input.contains("hello", true) -> "Hi there!"

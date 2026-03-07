@@ -26,34 +26,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import android.net.Uri
 import android.os.Build
 import android.widget.Toast
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import coil.compose.rememberAsyncImagePainter
-import kotlinx.coroutines.launch
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
-// displays the items of the profile page.
+// Displays username, image, back button and "Allow Notifications" button.
 @Composable
 fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
-    val message by viewModel.message.collectAsState()
     Box(modifier = Modifier.fillMaxSize()){
-        Button(onClick = onNavigateToMainScreen,
+        IconButton(onClick = onNavigateToMainScreen,
             modifier = Modifier
                 .align(Alignment.TopStart)) {
-            Text(text = "Messages")
+            Icon(imageVector = Icons.Default.ArrowBack,
+                contentDescription = "back to messages")
         }
     }
 
@@ -67,6 +60,7 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) 
                 .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
         )
         Column {
+            // Profile image and name
             Text(
                 text = "Akris",
                 color = MaterialTheme.colorScheme.secondary,
@@ -88,6 +82,7 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) 
                     Toast.makeText(context, "Denied", Toast.LENGTH_SHORT).show()
                 }
             }
+
             Button(onClick = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
@@ -103,8 +98,6 @@ fun ProfileScreen(onNavigateToMainScreen: () -> Unit, viewModel: ChatViewModel) 
                         // Show popup
                         permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                     }
-
-
                 } else {
                     NotificationHandler.SendEnableNotification(context)
                 }

@@ -36,23 +36,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.isPopupLayout
 import androidx.room.util.TableInfo
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.input.pointer.pointerInput
 
 
-
-// Shows the message sent by user or bot
+// Shows the message sent by user or "bot".
 @Composable
 fun MessageCard(
     message: MessageEntity,
@@ -61,7 +59,7 @@ fun MessageCard(
     var showDialog by remember { mutableStateOf(false) }
     val isUser = message.isFromUser
 
-    // Delete confirmation dialog
+    // Message deletion confirmation dialog
     if(showDialog) {
         AlertDialog(
             onDismissRequest = {showDialog = false},
@@ -87,8 +85,6 @@ fun MessageCard(
         )
     }
 
-
-    // Padding around the message
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,13 +123,29 @@ fun MessageCard(
     }
 }
 
-// Displays the messages stored in the Room Database
+// Displays the ChatScreen with all of it's contents.
 @Composable
 fun Conversation(
     viewModel: ChatViewModel,
-    onNavigateToProfilePage: () -> Unit
+    onNavigateToProfilePage: () -> Unit,
+    onNavigateToMainScreen: () -> Unit
 ){
     val messages by viewModel.message.collectAsState()
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.Start
+    ) {
+        // Back to conversationsScreen button
+        IconButton(
+            onClick =  onNavigateToMainScreen
+        ) {
+            Icon(imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "back to conversationsScreen")
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize())
     {
@@ -175,6 +187,7 @@ fun Conversation(
     }
 }
 
+// Users typing field
 @Composable
 fun ChatBox(
     onSend: (String) -> Unit
@@ -204,11 +217,11 @@ fun ChatBox(
             onClick = { if (text.isNotBlank()) {
                 onSend(text)
                 text = ""
-            }
+                }
             }
         ) {
             Icon(
-                imageVector = Icons.Default.PlayArrow,
+                imageVector = Icons.Default.Send,
                 contentDescription = "Send"
                 )
             }
@@ -216,6 +229,7 @@ fun ChatBox(
     }
 }
 
+// Shows the chatheader on top of the screen.
 @Composable
 fun ChatHeader() {
     Surface(

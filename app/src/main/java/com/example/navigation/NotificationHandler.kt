@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
+// Handles the programs notifications logic.
 object NotificationHandler {
     const val CHANNEL_ID = "chat_notification"
     fun CreateNotificationChannel(context: Context) {
@@ -30,7 +31,7 @@ object NotificationHandler {
         }
     }
 
-    // Notification when user enables notifications
+    // Notification when user enables notifications.
     fun SendEnableNotification(context: Context) {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -53,7 +54,7 @@ object NotificationHandler {
     }
 
 
-    // Notification when bot sends a message
+    // Notification when bot sends a message.
     fun SendBotMessageNotification(context: Context, botName: String, message: String) {
 
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -81,6 +82,7 @@ object NotificationHandler {
     }
 }
 
+// Sends the actual notification.
 private fun send(context: Context, builder: NotificationCompat.Builder) {
 
     with(NotificationManagerCompat.from(context)) {
@@ -95,7 +97,7 @@ private fun send(context: Context, builder: NotificationCompat.Builder) {
     }
 }
 
-
+// Helper object to track whether the app is foreground or not.
 object AppState {
     var isForeground = false
 }

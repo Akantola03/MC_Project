@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 
-
+// Displays the "list" of available "chats" (there is only one option though).
 @Composable
 fun ConversationsScreen(
     onOpenChat: () -> Unit,
@@ -50,7 +50,7 @@ fun ConversationsScreen(
             }
         }
 
-
+        // Chat card. Clicking it will take the user to the chat.
         Card(
             modifier = Modifier
                 .fillMaxWidth()
